@@ -45,7 +45,8 @@ $(document).ready(function() {
             hourRow.append(notesCol);
 
             saveCol = $( "<div>" );
-            saveCol.attr("class", "col-md-1 rounded-right text-center p-3");
+            saveCol.attr("class", "col-md-1 rounded-right text-center p-3 save");
+            saveCol.attr("data-time-string", timeString);
             saveCol.css("background-color", "teal");
             saveCol.html("<h3><span class='fas fa-save'></span></h3>");
             hourRow.append(saveCol);
@@ -54,11 +55,6 @@ $(document).ready(function() {
             notesForm = $( "<form class='m-1'></form>" );
             notesForm.css("height", "90%");
             notesCol.append(notesForm);
-            /*
-            notesInput = $( `<div class='form-group p-0 m-0'>\
-                                <input class='form-control-plaintext m-0' id='notes${timeString}' type='text'>\
-                            </div>` );
-            */
             notesInput = $( `<input class='form-control-plaintext p-3' id='notes${timeString}' type='text'>` );
             notesInput.css("height", "100%");
             notesForm.append(notesInput);
@@ -66,4 +62,32 @@ $(document).ready(function() {
         };
     };
     showCalendar();
+
+    const showNotes = () => {
+        let allNotes;
+        if (localStorage.getItem("allNotes")) {
+            allNotes = JSON.parse(localStorage.getItem("allNotes"));
+        };
+    };
+    showNotes();
+
+    const saveNote = (dataTimeString) => {
+        let allNotes = {};
+        let thisNote;
+        thisNote = $( `#notes${dataTimeString}` ).val();
+        console.log(thisNote);
+        // Get notes object if existing
+        if (localStorage.getItem("allNotes")) {
+            allNotes = JSON.parse(localStorage.getItem("allNotes"));
+        };
+        allNotes[dataTimeString] = thisNote;
+        localStorage.setItem("allNotes", JSON.stringify(allNotes));
+    };
+    
+    $( ".save" ).on("click", function() {
+        let dataTimeString;
+        dataTimeString = $(this).attr("data-time-string");
+        saveNote(dataTimeString);
+    });
+
 });
