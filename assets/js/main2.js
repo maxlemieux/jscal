@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     showDay();
 
     // Create rows on the page for each hour of the workday
-    const showCalendar = function () {
+    const showCalendar = () => {
         let notesForm, notesInput;
         let thisHour, timeString;
 
@@ -61,13 +61,14 @@ document.addEventListener('DOMContentLoaded', function () {
     showCalendar();
 
     // Show notes from localstorage on page
-    const showNotes = function () {
+    const showNotes = () => {
         let allNotes;
         if (localStorage.getItem('allNotes')) {
             allNotes = JSON.parse(localStorage.getItem('allNotes'));
             const keys = Object.keys(allNotes);
             for (key of keys) {
-                $( `#notes${key}` ).val(allNotes[key]);
+                const thisNote = document.getElementById(`notes${key}`);
+                thisNote.value = allNotes[key];
             };
         };
     };
@@ -76,16 +77,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to save notes to a localstorage object
     const saveNote = function (dataTimeString) {
         let allNotes, thisNote;
+        // Get note from the input field
         thisNote = document.getElementById(`notes${dataTimeString}`).value;
 
-        //console.log(thisNote);
         // Get notes object if existing
         if (localStorage.getItem('allNotes')) {
             allNotes = JSON.parse(localStorage.getItem('allNotes'));
         } else {
             allNotes = {};
         };
+        
+        // Add this note to the notes object
         allNotes[dataTimeString] = thisNote;
+
+        // Save the notes object to local storage
         localStorage.setItem('allNotes', JSON.stringify(allNotes));
     };
     
