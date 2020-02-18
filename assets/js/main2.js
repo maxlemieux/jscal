@@ -76,8 +76,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to save notes to a localstorage object
     const saveNote = function (dataTimeString) {
         let allNotes, thisNote;
-        thisNote = $( `#notes${dataTimeString}` ).val();
-        console.log(thisNote);
+        thisNote = document.getElementById(`notes${dataTimeString}`).value;
+
+        //console.log(thisNote);
         // Get notes object if existing
         if (localStorage.getItem('allNotes')) {
             allNotes = JSON.parse(localStorage.getItem('allNotes'));
