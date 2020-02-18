@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Reference to main display container
-    const mainElement = $( '#main' );
+    //const mainElement = $( '#main' );
+    const mainElement = document.querySelector( '#main' );
     
     // Show the current day of the week, month and day of month
     const showDay = function () {
@@ -21,50 +22,40 @@ document.addEventListener('DOMContentLoaded', function () {
             // Display as 12 hour time
             thisHour = moment(i+':00', 'HH:mm');
             timeString = thisHour.format('hA');
-            
-            const hourRow = $( '<div>' );
-            hourRow.attr('class', 'row');
-            hourRow.attr('id', timeString);
-            mainElement.append(hourRow);
 
-            // Add three columns to each row for the time, the notes field and the save button
-            const timeCol = $( '<div>' );
-            timeCol.attr('class', 'col-1 text-right p-3');
-            timeCol.css('border-style', 'dashed none none none');
-            timeCol.css('border-color', 'grey');
-            timeCol.text(timeString);
-            hourRow.append(timeCol);
+            // Insert a row to hold the hour, the note for that hour and the save button
+            mainElement.insertAdjacentHTML('beforeend', `<div class='row' id='${timeString}'></div>`);
+            const hourRow = document.getElementById(timeString);
 
-            const notesCol = $( '<div>' );
-            notesCol.attr('class', 'col-10 p-0');
+            // Add the hour column
+            hourRow.insertAdjacentHTML(
+                'beforeend', 
+                `<div class='hour col-1 text-right p-3'>${timeString}</div>`
+            );
 
-            // Check if we are printing a past, present or future hour and set background color
+            // Add the notes column
+            // Check if we are printing notes for a past, present or future hour and set class for css coloring
+            let noteClass;
             if (moment().diff(thisHour) > 3600000) {
-                notesCol.css('background-color', 'silver');    
+                noteClass = 'past';    
             } else if (moment().diff(thisHour) < 3600000 && moment().diff(thisHour) > 0) {
-                notesCol.css('background-color', 'DarkSalmon');
+                noteClass = 'present';
             } else {
-                notesCol.css('background-color', 'DarkSeaGreen');
+                noteClass = 'future';
             };
 
-            hourRow.append(notesCol);
+            hourRow.insertAdjacentHTML(
+                'beforeend',
+                `<div class='col-10 p-0 ${noteClass}' id='notes-${timeString}'></div>`
+            );
+            notesCol = document.getElementById(`notes-${timeString}`);
 
-            const saveCol = $( '<div>' );
-            saveCol.attr('class', 'col-1 rounded-right text-center p-3 save');
-            saveCol.attr('data-time-string', timeString);
-            saveCol.css('background-color', 'teal');
-            saveCol.html('<h3><span class="fas fa-save"></span></h3>');
-            hourRow.append(saveCol);
-
-            // Add input field to notesCol
-            notesForm = $( '<form>' );
-            notesForm.attr('class', 'notes-form m-1');
-            notesForm.css('height', '90%');
-            notesCol.append(notesForm);
-            notesInput = $( `<input id='notes${timeString}' type='text'>` );
-            notesInput.attr('class', 'form-control-plaintext p-3');
-            notesInput.css('height', '100%');
-            notesForm.append(notesInput);
+            hourRow.insertAdjacentHTML(
+                'beforeend',
+                `<div class='col-1 save saveBtn text-center p-3' data-time-string=${timeString}><h3><span class='fas fa-save'></span></h3></div>`
+            );
+            
+            notesCol.innerHTML = `<form class="notes-form m-1"><input class='form-control-plaintext p-3' id='notes${timeString}' type='text'></form>`;
         };
     };
     showCalendar();
@@ -76,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function () {
             allNotes = JSON.parse(localStorage.getItem('allNotes'));
             const keys = Object.keys(allNotes);
             for (key of keys) {
-                //console.log(allNotes[key]);
                 $( `#notes${key}` ).val(allNotes[key]);
             };
         };
