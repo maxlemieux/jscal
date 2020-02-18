@@ -1,9 +1,9 @@
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Reference to main display container
-    mainElement = $( '#main' );
+    const mainElement = $( '#main' );
     
     // Show the current day of the week, month and day of month
-    const showDay = function showCurrentDayOfWeekMonthAndDayOfMonth() {
+    const showDay = function () {
         // Target element for current day display
         const currentDay = $( '#currentDay' );
         const dayText = moment().format('dddd, MMMM DD');
@@ -12,7 +12,7 @@ $(document).ready(function() {
     showDay();
 
     // Create rows on the page for each hour of the workday
-    const showCalendar = function showHourNotesAndSaveButtonAsCalendar() {
+    const showCalendar = function () {
         let notesForm, notesInput;
         let thisHour, timeString;
 
@@ -69,7 +69,7 @@ $(document).ready(function() {
     showCalendar();
 
     // Show notes from localstorage on page
-    const showNotes = () => {
+    const showNotes = function () {
         let allNotes;
         if (localStorage.getItem('allNotes')) {
             allNotes = JSON.parse(localStorage.getItem('allNotes'));
@@ -83,7 +83,7 @@ $(document).ready(function() {
     showNotes();
 
     // Function to save notes to a localstorage object
-    const saveNote = (dataTimeString) => {
+    const saveNote = function (dataTimeString) {
         let allNotes, thisNote;
         thisNote = $( `#notes${dataTimeString}` ).val();
         console.log(thisNote);
@@ -98,14 +98,14 @@ $(document).ready(function() {
     };
     
     // Bind a function to save the notes from the same row when save button is clicked
-    $( '.save' ).on('click', function() {
+    $( '.save' ).on('click', function () {
         let dataTimeString;
         dataTimeString = $(this).attr('data-time-string');
         saveNote(dataTimeString);
     });
 
     // Do nothing when enter key is pressed in a notes field, we want to save with the save button instead
-    $( '.notes-form').on('submit', function(event) {
+    $( '.notes-form').on('submit', function (event) {
         event.preventDefault();
     });
 });
