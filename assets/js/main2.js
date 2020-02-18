@@ -1,6 +1,6 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     /* Reference to main display container */
-    const mainElement = document.querySelector( '#main' );
+    const mainElement = document.querySelector('#main');
     
     /* Show the current day of the week, month and day of month */
     const showDay = () => {
@@ -8,11 +8,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const currentDay = document.querySelector('#currentDay');
         const dayText = moment().format('dddd, MMMM DD');
         currentDay.textContent = dayText;   
-    }
+    };
 
     /* Create rows on the page for each hour of the workday */
     const showCalendar = () => {
-        let notesForm, notesInput, noteClass;
+        let noteClass;
 
         /* Loop from 0900 hours to 1700 hours */
         for (i=9; i<=17; i++) {
@@ -54,40 +54,37 @@ document.addEventListener('DOMContentLoaded', function () {
             /* Insert save button */
             hourRow.insertAdjacentHTML(
                 'beforeend',
-                `<div class='col-1 save saveBtn text-center p-3' data-time-string=${timeString}><i class='fas fa-save'></i></div>`
+                `<div class='col-1 saveBtn text-center p-3' data-time-string=${timeString}><i class='fas fa-save'></i></div>`
             );
         };
-    }
+    };
   
     /* Show notes from local storage on page */
     const showNotes = () => {
-        let allNotes;
         /* If there's a notes object in local storage, use it to get notes and display them */
         if (localStorage.getItem('allNotes')) {
-            allNotes = JSON.parse(localStorage.getItem('allNotes'));
+            const allNotes = JSON.parse(localStorage.getItem('allNotes'));
             /* Notes are keyed by the hour */
             const keys = Object.keys(allNotes);
-            for (key of keys) {
+            for (const key of keys) {
                 /* Get reference to the input field matching the note for this hour */
                 const thisNote = document.getElementById(`notes${key}`);
                 thisNote.value = allNotes[key];
             };
         };
-    }
+    };
 
-    /* Function to save notes to a localstorage object */
+    /* Save notes to a local storage object */
     const saveNote = function (dataTimeString) {
-        let allNotes;
-        /* Get note from the input field */
+        /* Get note from the value of the input field */
         const thisNote = document.getElementById(`notes${dataTimeString}`).value;
+        let allNotes = {};
 
-        /* Get notes object if existing */
+        /* Get notes object from local storage if existing */
         if (localStorage.getItem('allNotes')) {
             allNotes = JSON.parse(localStorage.getItem('allNotes'));
-        } else {
-            allNotes = {};
         };
-        
+
         /* Add this note to the notes object */
         allNotes[dataTimeString] = thisNote;
 
@@ -97,9 +94,13 @@ document.addEventListener('DOMContentLoaded', function () {
     
     /* Set up event listeners */
     const addListeners = () => {
-        /* Bind a function to save the notes from the same row when save button is clicked */
         /* Get an array of all the save buttons */
-        const allSaveButtons = Array.prototype.slice.call(document.querySelectorAll('.save'));
+        const allSaveButtons = Array.prototype.slice.call(document.querySelectorAll('.saveBtn'));
+        
+        /* Get an array of all the input fields */
+        const allNotesForms = Array.prototype.slice.call(document.querySelectorAll('.notes-form'));
+        
+        /* Bind a function to save the notes from the same row when save button is clicked */
         for (const saveButton of allSaveButtons) {
             /* Add an event listener to save the note on click */
             saveButton.addEventListener('click', function (event) {
@@ -109,14 +110,13 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         /* Do nothing when enter key is pressed in a notes field, we want to save with the save button instead */
-        const allNotesForms = Array.prototype.slice.call(document.querySelectorAll('.notes-form'));
         for (const notesForm of allNotesForms) {
             /* Add an event listener to all the input fields */
             notesForm.addEventListener('submit', function() {
                 event.preventDefault();
             });
         };
-    }
+    };
     
     /* Build the page! */
     showDay();
