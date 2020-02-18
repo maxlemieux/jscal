@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Reference to main display container
     //const mainElement = $( '#main' );
     const mainElement = document.querySelector( '#main' );
-    
+
     // Show the current day of the week, month and day of month
     const showDay = function () {
         // Target element for current day display
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
             timeString = thisHour.format('hA');
 
             // Insert a row to hold the hour, the note for that hour and the save button
-            mainElement.insertAdjacentHTML('beforeend', `<div class='row' id='${timeString}'></div>`);
+            mainElement.insertAdjacentHTML('beforeend', `<div class='row' id=${timeString}></div>`);
             const hourRow = document.getElementById(timeString);
 
             // Add the hour column
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             hourRow.insertAdjacentHTML(
                 'beforeend',
-                `<div class='col-1 save saveBtn text-center p-3' data-time-string=${timeString}><h3><span class='fas fa-save'></span></h3></div>`
+                `<div class='col-1 save saveBtn text-center p-3' data-time-string=${timeString}><i class='fas fa-save'></i></div>`
             );
             
             notesCol.innerHTML = `<form class="notes-form m-1"><input class='form-control-plaintext p-3' id='notes${timeString}' type='text'></form>`;
@@ -95,11 +95,15 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     
     // Bind a function to save the notes from the same row when save button is clicked
-    $( '.save' ).on('click', function () {
-        let dataTimeString;
-        dataTimeString = $(this).attr('data-time-string');
-        saveNote(dataTimeString);
-    });
+    // Get an array of all the save buttons
+    const allSaveButtons = Array.prototype.slice.call(document.querySelectorAll('.save'));
+    for (const saveButton of allSaveButtons) {
+        // Add an event listener to save the note on click
+        saveButton.addEventListener('click', function (event) {
+            const dataTimeString = saveButton.getAttribute('data-time-string');
+            saveNote(dataTimeString);
+        });
+    };
 
     // Do nothing when enter key is pressed in a notes field, we want to save with the save button instead
     $( '.notes-form').on('submit', function (event) {
