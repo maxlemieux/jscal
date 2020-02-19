@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /* Create rows on the page for each hour of the workday */
     const showCalendar = () => {
         let noteClass;
-
+        
         /* Loop from 0900 hours to 1700 hours */
         for (i=9; i<=17; i++) {
             /* Display as 12 hour time */
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /* Save notes to a local storage object */
-    const saveNote = function (dataTimeString) {
+    const saveNote = dataTimeString => {
         /* Get note from the value of the input field */
         const thisNote = document.getElementById(`notes${dataTimeString}`).value;
         let allNotes = {};
