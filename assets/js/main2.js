@@ -1,3 +1,4 @@
+'use strict';
 document.addEventListener('DOMContentLoaded', () => {
     /* Reference to main display container */
     const mainElement = document.querySelector('#main');
@@ -15,14 +16,17 @@ document.addEventListener('DOMContentLoaded', () => {
         let noteClass;
         
         /* Loop from 0900 hours to 1700 hours */
-        for (i=9; i<=17; i++) {
+        for (let i=9; i<=17; i++) {
             /* Display as 12 hour time */
             const thisHour = moment(i+':00', 'HH:mm');
             const timeString = thisHour.format('hA');
             const hourDiff = moment().diff(thisHour);
 
             /* Insert a row to hold the hour, the note for that hour and the save button */
-            mainElement.insertAdjacentHTML('beforeend', `<div class='row' id='${timeString}'></div>`);
+            mainElement.insertAdjacentHTML(
+                'beforeend',
+                `<div class='row' id='${timeString}'></div>`
+            );
             const hourRow = document.getElementById(timeString);
 
             /* Add the hour column */
@@ -49,7 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const notesCol = document.getElementById(`notes-${timeString}`);
 
             /* Insert form with input field for notes */
-            notesCol.innerHTML = `<form class="notes-form m-1"><input class='form-control-plaintext p-3' id='notes${timeString}' type='text'></form>`;
+            const inputString = `<input class='form-control-plaintext p-3' id='notes${timeString}' type='text' />`;
+            notesCol.innerHTML = `<form class="notes-form m-1">${inputString}</form>`;
             
             /* Insert save button */
             hourRow.insertAdjacentHTML(
