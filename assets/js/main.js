@@ -1,112 +1,131 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Reference to main display container
-    const mainElement = $( '#main' );
+'use strict';
+document.addEventListener('DOMContentLoaded', () => {
+    /* Reference to main display container */
+    const mainElement = document.querySelector('#main');
     
-    // Show the current day of the week, month and day of month
-    const showDay = function () {
-        // Target element for current day display
+    /* Show the current day of the week, month and day of month */
+    const showDay = () => {
+        /* Target element for current day display */
         const currentDay = document.querySelector('#currentDay');
         const dayText = moment().format('dddd, MMMM DD');
         currentDay.textContent = dayText;   
     };
-    showDay();
 
-    // Create rows on the page for each hour of the workday
-    const showCalendar = function () {
-        let notesForm, notesInput;
-        let thisHour, timeString;
+    /* Create rows on the page for each hour of the workday */
+    const showCalendar = () => {
+        let noteClass;
+        
+        /* Loop from 0900 hours to 1700 hours */
+        for (let i=9; i<=17; i++) {
+            /* Display as 12 hour time */
+            const thisHour = moment(i+':00', 'HH:mm');
+            const timeString = thisHour.format('hA');
+            const hourDiff = moment().diff(thisHour);
 
-        // Loop from 0900 hours to 1700 hours
-        for (i=9; i<=17; i++) {
-            // Display as 12 hour time
-            thisHour = moment(i+':00', 'HH:mm');
-            timeString = thisHour.format('hA');
-            
-            const hourRow = $( '<div>' );
-            hourRow.attr('class', 'row');
-            hourRow.attr('id', timeString);
-            mainElement.append(hourRow);
+            /* Insert a row to hold the hour, the note for that hour and the save button */
+            mainElement.insertAdjacentHTML(
+                'beforeend',
+                `<div class='row' id='${timeString}'></div>`
+            );
+            const hourRow = document.getElementById(timeString);
 
-            // Add three columns to each row for the time, the notes field and the save button
-            const timeCol = $( '<div>' );
-            timeCol.attr('class', 'col-1 text-right p-3');
-            timeCol.css('border-style', 'dashed none none none');
-            timeCol.css('border-color', 'grey');
-            timeCol.text(timeString);
-            hourRow.append(timeCol);
+            /* Add the hour column */
+            hourRow.insertAdjacentHTML(
+                'beforeend', 
+                `<div class='hour col-1 text-right p-3'>${timeString}</div>`
+            );
 
-            const notesCol = $( '<div>' );
-            notesCol.attr('class', 'col-10 p-0');
-
-            // Check if we are printing a past, present or future hour and set background color
-            if (moment().diff(thisHour) > 3600000) {
-                notesCol.css('background-color', 'silver');    
-            } else if (moment().diff(thisHour) < 3600000 && moment().diff(thisHour) > 0) {
-                notesCol.css('background-color', 'DarkSalmon');
+            /* Add the notes column */
+            /* Check if we are printing notes for a past, present or future hour and set class for css coloring */
+            /* Get the difference in milliseconds between the present moment and the hour we are printing for */
+            if (hourDiff > 3600000) {
+                noteClass = 'past';    
+            } else if (hourDiff < 3600000 && hourDiff > 0) {
+                noteClass = 'present';
             } else {
-                notesCol.css('background-color', 'DarkSeaGreen');
+                noteClass = 'future';
             };
+            /* Insert column for notes and get a reference to it as notesCol */
+            hourRow.insertAdjacentHTML(
+                'beforeend',
+                `<div class='col-10 p-0 ${noteClass}' id='notes-${timeString}'></div>`
+            );
+            const notesCol = document.getElementById(`notes-${timeString}`);
 
-            hourRow.append(notesCol);
-
-            const saveCol = $( '<div>' );
-            saveCol.attr('class', 'col-1 rounded-right text-center p-3 save');
-            saveCol.attr('data-time-string', timeString);
-            saveCol.css('background-color', 'teal');
-            saveCol.html('<h3><span class="fas fa-save"></span></h3>');
-            hourRow.append(saveCol);
-
-            // Add input field to notesCol
-            notesForm = $( '<form>' );
-            notesForm.attr('class', 'notes-form m-1');
-            notesForm.css('height', '90%');
-            notesCol.append(notesForm);
-            notesInput = $( `<input id='notes${timeString}' type='text'>` );
-            notesInput.attr('class', 'form-control-plaintext p-3');
-            notesInput.css('height', '100%');
-            notesForm.append(notesInput);
+            /* Insert form with input field for notes */
+            const inputString = `<input class='form-control-plaintext p-3' id='notes${timeString}' type='text' />`;
+            notesCol.innerHTML = `<form class="notes-form m-1">${inputString}</form>`;
+            
+            /* Insert save button */
+            hourRow.insertAdjacentHTML(
+                'beforeend',
+                `<div class='col-1 saveBtn text-center p-3' data-time-string=${timeString}><i class='fas fa-save'></i></div>`
+            );
         };
     };
-    showCalendar();
-
-    // Show notes from localstorage on page
-    const showNotes = function () {
-        let allNotes;
+  
+    /* Show notes from local storage on page */
+    const showNotes = () => {
+        /* If there's a notes object in local storage, use it to get notes and display them */
         if (localStorage.getItem('allNotes')) {
-            allNotes = JSON.parse(localStorage.getItem('allNotes'));
+            const allNotes = JSON.parse(localStorage.getItem('allNotes'));
+            /* Notes are keyed by the hour */
             const keys = Object.keys(allNotes);
-            for (key of keys) {
-                //console.log(allNotes[key]);
-                $( `#notes${key}` ).val(allNotes[key]);
+            for (const key of keys) {
+                /* Get reference to the input field matching the note for this hour */
+                const thisNote = document.getElementById(`notes${key}`);
+                thisNote.value = allNotes[key];
             };
         };
     };
-    showNotes();
 
-    // Function to save notes to a localstorage object
-    const saveNote = function (dataTimeString) {
-        let allNotes, thisNote;
-        thisNote = $( `#notes${dataTimeString}` ).val();
-        console.log(thisNote);
-        // Get notes object if existing
+    /* Save notes to a local storage object */
+    const saveNote = dataTimeString => {
+        /* Get note from the value of the input field */
+        const thisNote = document.getElementById(`notes${dataTimeString}`).value;
+        let allNotes = {};
+
+        /* Get notes object from local storage if existing */
         if (localStorage.getItem('allNotes')) {
             allNotes = JSON.parse(localStorage.getItem('allNotes'));
-        } else {
-            allNotes = {};
         };
+
+        /* Add this note to the notes object */
         allNotes[dataTimeString] = thisNote;
+
+        /* Save the notes object to local storage */
         localStorage.setItem('allNotes', JSON.stringify(allNotes));
     };
     
-    // Bind a function to save the notes from the same row when save button is clicked
-    $( '.save' ).on('click', function () {
-        let dataTimeString;
-        dataTimeString = $(this).attr('data-time-string');
-        saveNote(dataTimeString);
-    });
+    /* Set up event listeners */
+    const addListeners = () => {
+        /* Get an array of all the save buttons */
+        const allSaveButtons = Array.prototype.slice.call(document.querySelectorAll('.saveBtn'));
+        
+        /* Get an array of all the input fields */
+        const allNotesForms = Array.prototype.slice.call(document.querySelectorAll('.notes-form'));
+        
+        /* Bind a function to save the notes from the same row when save button is clicked */
+        for (const saveButton of allSaveButtons) {
+            /* Add an event listener to save the note on click */
+            saveButton.addEventListener('click', function (event) {
+                const dataTimeString = saveButton.getAttribute('data-time-string');
+                saveNote(dataTimeString);
+            });
+        };
 
-    // Do nothing when enter key is pressed in a notes field, we want to save with the save button instead
-    $( '.notes-form').on('submit', function (event) {
-        event.preventDefault();
-    });
+        /* Do nothing when enter key is pressed in a notes field, we want to save with the save button instead */
+        for (const notesForm of allNotesForms) {
+            /* Add an event listener to all the input fields */
+            notesForm.addEventListener('submit', function() {
+                event.preventDefault();
+            });
+        };
+    };
+    
+    /* Build the page! */
+    showDay();
+    showCalendar();
+    showNotes();
+    addListeners();
 });
