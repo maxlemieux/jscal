@@ -1,5 +1,5 @@
 # jscal
-JavaScript calendar application for scheduling daily tasks
+A simple calendar app for scheduling your work day.
 
 ## Description
 jscal is a basic daily planner, allowing you to maintain a list of tasks by hour for the current day. 
