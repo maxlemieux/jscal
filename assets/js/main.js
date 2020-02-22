@@ -52,10 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
             );
             const notesCol = document.getElementById(`notes-${timeString}`);
 
-            /* Insert form with input field for notes */
-            const inputString = `<input class='form-control-plaintext p-3' id='notes${timeString}' type='text' />`;
-            notesCol.innerHTML = `<form class="notes-form m-1">${inputString}</form>`;
-            
+            /* Insert textarea for notes */
+            const inputString = `<textarea class='form-control-plaintext p-3' id='notes${timeString}' />`;
+            notesCol.innerHTML = inputString;
+
             /* Insert save button */
             hourRow.insertAdjacentHTML(
                 'beforeend',
@@ -101,24 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const addListeners = () => {
         /* Get an array of all the save buttons */
         const allSaveButtons = Array.prototype.slice.call(document.querySelectorAll('.saveBtn'));
-        
-        /* Get an array of all the input fields */
-        const allNotesForms = Array.prototype.slice.call(document.querySelectorAll('.notes-form'));
-        
+
         /* Bind a function to save the notes from the same row when save button is clicked */
         for (const saveButton of allSaveButtons) {
             /* Add an event listener to save the note on click */
             saveButton.addEventListener('click', function (event) {
                 const dataTimeString = saveButton.getAttribute('data-time-string');
                 saveNote(dataTimeString);
-            });
-        };
-
-        /* Do nothing when enter key is pressed in a notes field, we want to save with the save button instead */
-        for (const notesForm of allNotesForms) {
-            /* Add an event listener to all the input fields */
-            notesForm.addEventListener('submit', function() {
-                event.preventDefault();
             });
         };
     };
