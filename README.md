@@ -18,9 +18,11 @@ The saved notes will persist through new page loads.
 #### Time frame highlighting
 On the page, the field for the task of the current hour appears red, past tasks appear grey and future tasks are green.
 
-Live application demo: https://maxlemieux.github.com/jscal/
-
-## Technologies used:
+## Technologies used
 * JavaScript
 * Bootstrap
 * localstorage
+
+## Live application demo
+View the app here:
+https://maxlemieux.github.com/jscal/
